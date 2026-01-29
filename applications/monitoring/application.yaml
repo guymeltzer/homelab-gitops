@@ -32,6 +32,10 @@ spec:
               cpu: 200m
 
         prometheus:
+          service:
+            type: NodePort
+            nodePort: 30090
+
           prometheusSpec:
             resources:
               requests:
