@@ -1,0 +1,84 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: harbor
+  namespace: argocd
+spec:
+  project: default
+  
+  source:
+    repoURL: https://helm.goharbor.io
+    chart: harbor
+    targetRevision: 1.18.2
+    helm:
+      values: |
+        # Harbor configuration for kind cluster
+        expose:
+          type: nodePort
+          tls:
+            enabled: false
+          nodePort:
+            ports:
+              http:
+                nodePort: 30002
+
+        externalURL: http://172.18.0.6:30002
+
+        # Reduce resources for homelab
+        portal:
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+
+        core:
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+
+        jobservice:
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+
+        registry:
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+
+        chartmuseum:
+          enabled: false
+
+        notary:
+          enabled: false
+
+        trivy:
+          enabled: true
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 200m
+
+        persistence:
+          enabled: true
+          persistentVolumeClaim:
+            registry:
+              size: 10Gi
+            database:
+              size: 2Gi
+
+        harborAdminPassword: "Harbor12345"
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: harbor
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
