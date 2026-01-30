@@ -70,7 +70,7 @@ spec:
             database:
               size: 2Gi
 
-        harborAdminPassword: "Harbor12345"
+        harborAdminPassword: "LmU2aw*ugCGr*z"
   
   destination:
     server: https://kubernetes.default.svc
